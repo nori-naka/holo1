@@ -13,7 +13,7 @@ const http = require("http");
 const PORT = process.env.PORT || 443;
 
 // const server = https.createServer(options, app);
-const server = http.createServer(options, app);
+const server = http.createServer(app);
 const io = require("socket.io")(server);
 server.listen(PORT, () => {
   console.log(`SERVER START PORT: ${server.address().port}`);
