@@ -24,6 +24,10 @@ export default defineConfig({
       "/store": {
         target: 'https://localhost',
         secure: false,
+      },
+      "/file_list": {
+        target: 'https://localhost',
+        secure: false,
       }
     }
   },

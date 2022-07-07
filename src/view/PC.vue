@@ -1,11 +1,14 @@
 <script setup>
-import { ref, provide, computed } from "vue";
+import { ref, provide, inject, computed, watchEffect } from "vue";
 import RemoteMainte from "../components/RemoteMainte.vue"
 import HistoryTable from "../components/HistoryTable.vue"
 
 const array_infos = ref([]);
 provide("get_array_infos", () => { return array_infos.value });
-provide("set_array_infos", (v) => { array_infos.value.push(v)});
+provide("set_array_infos", v  => { array_infos.value.push(v)});
+
+// const historyTable = ref(null);
+// const onupload = () => { historyTable.value.get_text() }
 </script>
 
 <template>
@@ -15,12 +18,13 @@ provide("set_array_infos", (v) => { array_infos.value.push(v)});
     <label class="tab-label" for="tab01">遠隔保守作業</label>
     <div class="tab-content">
       <!-- 本体タブ -->
+      <!-- <RemoteMainte @upload="onupload"></RemoteMainte> -->
       <RemoteMainte></RemoteMainte>
     </div>
     <input id="tab02" type="radio" name="tab" class="tab-switch">
     <label class="tab-label" for="tab02">履歴一覧</label>
     <div class="tab-content">
-      <HistoryTable></HistoryTable>
+      <HistoryTable ref="historyTable"></HistoryTable>
     </div>
     <input id="tab03" type="radio" name="tab" class="tab-switch">
     <label class="tab-label" for="tab03">報告書印刷</label>

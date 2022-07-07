@@ -34,7 +34,7 @@ const sp_start = ({ speech_text, before, next, end, error }) => {
 };
 
 const sp_stop = ({ next }) => {
-  recognition.stop();
+  if(recognition) recognition.stop();
   if (next) next();
 };
 

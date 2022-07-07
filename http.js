@@ -51,8 +51,8 @@ app.post("/store", upload_data.single("data"), function(req, res, next) {
 
 app.use(express.static("dist"));
 // app.use(express.static("data"));
-app.use(express.static("tmp"));
-app.get(/.*/, (req, res) => {
+app.use("/tmp", express.static("tmp"));
+app.get("/Holo", (req, res) => {
   res.sendFile(__dirname + "/dist/index.html");
 });
 

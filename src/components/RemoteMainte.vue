@@ -73,6 +73,11 @@ onMounted(() => {
   console.dir(remoteVideoRef.value.youVideo);
 })
 
+// const emit = defineEmits(["upload"])
+const onupload = () => {
+  sp_stop({next: rec_mode.value=false});
+  // emit("upload");
+}
 </script>
 
 <template>
@@ -87,7 +92,7 @@ onMounted(() => {
       <DrawCanvasVue
         ref="drawCanvasRef"
         :mic_text="text_memo_value"
-        @upload="sp_stop({next: rec_mode=false})"
+        @upload="onupload"
       ></DrawCanvasVue>
     </div>
     <div class="menu-btn">

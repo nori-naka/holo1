@@ -2,16 +2,18 @@ const express = require("express");
 const app = express();
 const fs = require("fs");
 const multer = require("multer");
-const SSL_KEY = "cert/server.key";
-const SSL_CERT = "cert/server.crt";
-const https = require("https");
-const options = {
-  key: fs.readFileSync(SSL_KEY).toString(),
-  cert: fs.readFileSync(SSL_CERT).toString()
-};
+// const SSL_KEY = "cert/server.key";
+// const SSL_CERT = "cert/server.crt";
+// const https = require("https");
+const http = require("http");
+// const options = {
+//   key: fs.readFileSync(SSL_KEY).toString(),
+//   cert: fs.readFileSync(SSL_CERT).toString()
+// };
 const PORT = process.env.PORT || 443;
 
-const server = https.createServer(options, app);
+// const server = https.createServer(options, app);
+const server = http.createServer(app);
 const io = require("socket.io")(server);
 server.listen(PORT, () => {
   console.log(`SERVER START PORT: ${server.address().port}`);
@@ -49,21 +51,10 @@ app.post("/store", upload_data.single("data"), function(req, res, next) {
 
 app.use(express.static("dist"));
 // app.use(express.static("data"));
-app.use("/tmp", express.static("tmp"));
-app.get("/user/:name", (req, res) => {
-  console.log(req.params.name);
+app.use(express.static("tmp"));
+app.get(/.*/, (req, res) => {
   res.sendFile(__dirname + "/dist/index.html");
 });
-app.get("/file_list", (req, res) => {
-  console.log("file_list");
-  fs.readdir("tmp", {withFileTypes: true}, (err, files) => {
-    if (err) {
-      console.log(err);
-      return;
-    }
-    res.send(files);
-  });
-})
 
 // -------------------------------------------------------------
 // socket.io

@@ -9,7 +9,7 @@ const routes = [
     component: PC
   },
   {
-    path: "/Holo",
+    path: "/user/Holo",
     name: "Holo",
     component: Holo
   },
