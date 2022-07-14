@@ -17,11 +17,6 @@ server.listen(PORT, () => {
   console.log(`SERVER START PORT: ${server.address().port}`);
 });
 
-// app.get("/", (req, res, next) => {
-//   console.dir(req);
-//   res.end()
-// });
-
 // ミドルウェア設定
 app.use(express.urlencoded({ extended: true }));
 
