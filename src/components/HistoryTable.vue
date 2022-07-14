@@ -1,12 +1,12 @@
 <script setup>
-import { inject, onMounted, ref } from "vue";
+import { inject, ref } from "vue";
 import { key } from "../store";
-const { store_update, store_get } = inject(key);
+const { store_update, store_set, store_get } = inject(key);
 
 store_update();
 const store = store_get();
 const isReady = ref(false);
-const edit_index = ref(null);
+const edit_id = ref(null);
 const textareaRef = ref(null);
 
 setTimeout(() => {
@@ -31,7 +31,7 @@ const post_file = async (file_name, b64) => {
       if (response.status == 200) {
         console.log(`成功:${JSON.stringify(response)}`);
         if (/.+\.jpg/.test(file_name)) {
-          socketio.emit("update", { file_name: file_name })
+          socketio.emit("update", { file_name: `/tmp/${file_name}` })
         }
       } else {
         console.log(`失敗:${JSON.stringify(response)}`);
@@ -40,39 +40,43 @@ const post_file = async (file_name, b64) => {
     .catch(error => console.log(error.message));
 }
 
-const toggle_edit_mode = async (index) => {
-  console.log(index);
-  if (edit_index.value === index) {
-    edit_index.value = null;
-    console.log(store.infos[index].text_content);
-    console.log(textareaRef.value[0].value);
-    console.log(store.infos[index].date);
-    if (store.infos[index].text_content !== textareaRef.value[0].value) {
-      // alert("変更したな！");
-      const text_plain = new Blob([ textareaRef.value[0].value ], { type:"text/plain" });
-      await post_file(store.infos[index].date + ".txt", text_plain);
-      store_update();
-    }
+const toggle_edit_mode = async (id) => {
+  if (edit_id.value === id) {
+    edit_id.value = null;
+
+    const text_plain = new Blob([ store.infos[id].text_content ], { type:"text/plain" });
+    await post_file(id + ".txt", text_plain);
   } else {
-    edit_index.value = index;
+    edit_id.value = id;
+  }
+}
+
+
+const isNotSameDay = (id) => {
+  const id_list = Object.keys(store.infos);
+  const id_index = id_list.indexOf(id);
+  console.dir(id_list);
+  console.log(id_index);
+  if (id_index <= 0) {
+    return true;
+  } else {
+    console.log(store.infos[id_list[id_index -1]])
+    return store.infos[id_list[id_index -1]].day !== store.infos[id].day;
   }
 }
 
 </script>
 <template>
-  <!-- <div v-if="isReady">
-    {{ file_infos }}
-  </div> -->
   <div class="history_box" v-if="isReady">
-    <div v-for="(info, index) in store.infos" :key="info.date">
-      <div class="history_day" v-if="index === 0 ? true : info.day !== store.infos[index -1].day">{{ info.day }}</div>
+    <div v-for="(info, id, index) in store.infos" :key="info.id">
+      <div class="history_day" v-if="isNotSameDay(id)">{{ info.day }}</div>
       <div class="history_table">
         <div class="history_index">{{ index +1 }}</div>
         <div class="history_time">{{ info.h_m }}</div>
         <img :src=info.photo_url class="history_photo"/>
         <!-- <div>{{ info.text_content }}</div> -->
-        <div v-if="edit_index !== index" @click="toggle_edit_mode(index)"><a href="#">{{ info.text_content }}</a></div>
-        <div v-else><textarea ref="textareaRef" @blur="toggle_edit_mode(index)">{{ info.text_content }}</textarea></div>
+        <div v-if="edit_id !== id" @click="toggle_edit_mode(id)"><a href="#">{{ info.text_content }}</a></div>
+        <div v-else><textarea ref="textareaRef" @blur="toggle_edit_mode(id)" v-model="info.text_content"></textarea></div>
       </div>
     </div>
   </div>

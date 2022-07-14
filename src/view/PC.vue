@@ -17,8 +17,6 @@ provide("set_array_infos", v  => { array_infos.value.push(v)});
     <input id="tab01" type="radio" name="tab" class="tab-switch" checked="checked">
     <label class="tab-label" for="tab01">遠隔保守作業</label>
     <div class="tab-content">
-      <!-- 本体タブ -->
-      <!-- <RemoteMainte @upload="onupload"></RemoteMainte> -->
       <RemoteMainte></RemoteMainte>
     </div>
     <input id="tab02" type="radio" name="tab" class="tab-switch">

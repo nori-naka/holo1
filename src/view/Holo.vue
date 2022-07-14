@@ -11,7 +11,7 @@ const imgRef = ref(null);
 const socketio = inject("socketio");
 socketio.on("update", msg => {
   // imgRef.value.src = `/data/${msg.file_name}`
-  imgRef.value.src = msg.file_name
+  imgRef.value.src = `${msg.file_name}`
 })
 </script>
 

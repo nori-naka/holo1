@@ -244,6 +244,7 @@ export const useDraw = (drawRef) => {
     start,
     move,
     end,
-    pen_mode_toggle
+    pen_mode_toggle,
+    mode_write
   }
 }

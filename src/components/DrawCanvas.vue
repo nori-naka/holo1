@@ -2,7 +2,7 @@
 import { inject, onMounted, ref, computed } from "vue";
 import { useDraw } from "./useDraw";
 import { key } from "../store";
-const { store_update, store_get } = inject(key);
+const { store_update, store_set, store_get } = inject(key);
 
 const store = store_get();
 
@@ -30,7 +30,8 @@ const {
   start,
   move,
   end,
-  pen_mode_toggle
+  pen_mode_toggle,
+  mode_write
 } = useDraw(drawRef);
 
 const takePhoto = async track => {
@@ -68,7 +69,7 @@ const post_file = async (file_name, b64) => {
       if (response.status == 200) {
         console.log(`成功:${JSON.stringify(response)}`);
         if (/.+\.jpg/.test(file_name)) {
-          socketio.emit("update", { file_name: file_name })
+          socketio.emit("update", { file_name: `/tmp/${file_name}` })
         }
       } else {
         console.log(`失敗:${JSON.stringify(response)}`);
@@ -81,9 +82,9 @@ const get_i_photo = (num) => {
   console.log(`cur_photo_index.value = ${cur_photo_index.value}`);
   // console.log(`/tmp/${get_array_infos()[cur_photo_index.value].photo}`)
 
+  const id_list = Object.keys(store.infos);
   const next_i = cur_photo_index.value + num;
-
-  if (next_i < 0 || next_i > store.infos.length -1) {
+  if (next_i < 0 || next_i > id_list.length -1) {
     return;
   } else {
     cur_photo_index.value = next_i;
@@ -94,7 +95,7 @@ const get_i_photo = (num) => {
     photoRef.value.getContext("2d").drawImage(img, 0, 0, img.width, img.height, 0, 0, img.width, img.height);
   }
   // img.src = `/data/${file_name}`;
-  const img_url = store.infos[cur_photo_index.value].photo_url;
+  const img_url = store.infos[id_list[cur_photo_index.value]].photo_url;
   img.src = img_url;
   socketio.emit("update", { file_name: img_url })
 }
@@ -140,7 +141,15 @@ const uploadPhoto = async () => {
   console.dir(get_array_infos())
   cur_photo_index.value = get_array_infos().length -1;
 
-  store_update();
+  // store_update();
+  store_set(file_name, {
+    id: file_name,
+    day: new Date(Number(file_name)).toLocaleDateString(),
+    h_m: new Date(Number(file_name)).toLocaleTimeString(),
+    text_content: props.mic_text.value,
+    photo_url: `/tmp/${file_name}.jpg`
+  });
+
 
   props.mic_text.value = ""
   clear_array_lines();

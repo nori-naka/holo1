@@ -4,7 +4,7 @@
 
 import { provide } from "vue";
 import { io } from "socket.io-client";
-import store, { key } from "./store.ts";
+import store, { key } from "./store";
 
 provide("socketio",  io.connect('/', {
     transports: ['websocket'],
